@@ -1,0 +1,1046 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Resources:
+
+  # Rest API for all the apis in online auction system
+  ApiGatewayRestApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      ApiKeySourceType: HEADER
+      Description: Auction system API Gateway with lambda
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+      Name: cf-auctionSystem
+
+  # Auction products resource
+  AuctionProducts:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !GetAtt ApiGatewayRestApi.RootResourceId
+      PathPart: 'auction-products'
+      RestApiId: !Ref ApiGatewayRestApi
+
+  #  auction products option method
+  AuctionProductsOption:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: OPTIONS
+      Integration:
+        IntegrationResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+            "method.response.header.Access-Control-Allow-Methods": "'OPTIONS'"
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          ResponseTemplates:
+            application/json: ''
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+        Type: MOCK
+      MethodResponses:
+      - StatusCode: 200
+        ResponseModels:
+          application/json: 'Empty'
+        ResponseParameters:
+            "method.response.header.Access-Control-Allow-Headers": false
+            "method.response.header.Access-Control-Allow-Methods": false
+            "method.response.header.Access-Control-Allow-Origin": false
+      OperationName: 'lambda'
+      ResourceId: !Ref AuctionProducts
+      RestApiId: !Ref ApiGatewayRestApi  
+
+  #  auction products get method
+  AuctionProductsGet:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: GET
+      Integration:
+        ConnectionType: INTERNET
+        # iam role arn
+        Credentials: arn:aws:iam::472317706936:role/LabRole 
+        IntegrationHttpMethod: GET
+        PassthroughBehavior: WHEN_NO_MATCH
+        TimeoutInMillis: 29000
+        Type: AWS_PROXY
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${OnineAuctionSellerLambda.Arn}/invocations'
+        IntegrationResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            "method.response.header.Access-Control-Allow-Headers" : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+            "method.response.header.Access-Control-Allow-Methods": "'GET'"
+            "method.response.header.Access-Control-Allow-Origin" : "'*'"
+          ResponseTemplates:
+            application/json: ''
+        
+      MethodResponses:
+      - StatusCode: 200
+        ResponseModels:
+          application/json: 'Empty'
+        ResponseParameters:
+          "method.response.header.Access-Control-Allow-Headers" : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+          "method.response.header.Access-Control-Allow-Methods": "'GET'"
+          "method.response.header.Access-Control-Allow-Origin" : "'*'"
+      OperationName: 'lambda'
+      ResourceId: !Ref AuctionProducts
+      RestApiId: !Ref ApiGatewayRestApi
+
+  # Bid resource
+  BidApi:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !GetAtt ApiGatewayRestApi.RootResourceId
+      PathPart: 'bid'
+      RestApiId: !Ref ApiGatewayRestApi
+  
+  # Bid option method
+  BidOption:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: OPTIONS
+      Integration:
+        IntegrationResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+            "method.response.header.Access-Control-Allow-Methods": "'OPTIONS'"
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          ResponseTemplates:
+            application/json: ''
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+        Type: MOCK
+      MethodResponses:
+      - StatusCode: 200
+        ResponseModels:
+          application/json: 'Empty'
+        ResponseParameters:
+            "method.response.header.Access-Control-Allow-Headers": false
+            "method.response.header.Access-Control-Allow-Methods": false
+            "method.response.header.Access-Control-Allow-Origin": false
+      OperationName: 'lambda'
+      ResourceId: !Ref BidApi
+      RestApiId: !Ref ApiGatewayRestApi  
+
+  # Bid get method
+  BidGet:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: GET
+      Integration:
+        ConnectionType: INTERNET
+        # iam role arn
+        Credentials: arn:aws:iam::472317706936:role/LabRole 
+        IntegrationHttpMethod: GET
+        PassthroughBehavior: WHEN_NO_MATCH
+        TimeoutInMillis: 29000
+        Type: AWS_PROXY
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${OnlineAuctionBidding.Arn}/invocations'
+        IntegrationResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            "method.response.header.Access-Control-Allow-Headers" : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+            "method.response.header.Access-Control-Allow-Methods": "'GET'"
+            "method.response.header.Access-Control-Allow-Origin" : "'*'"
+          ResponseTemplates:
+            application/json: ''
+        
+      MethodResponses:
+      - StatusCode: 200
+        ResponseModels:
+          application/json: 'Empty'
+        ResponseParameters:
+          "method.response.header.Access-Control-Allow-Headers" : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+          "method.response.header.Access-Control-Allow-Methods": "'GET'"
+          "method.response.header.Access-Control-Allow-Origin" : "'*'"
+      OperationName: 'lambda'
+      ResourceId: !Ref BidApi
+      RestApiId: !Ref ApiGatewayRestApi
+
+  # Bid put method
+  BidPut:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: PUT
+      Integration:
+        ConnectionType: INTERNET
+        # iam role arn
+        Credentials: arn:aws:iam::472317706936:role/LabRole 
+        IntegrationHttpMethod: PUT
+        PassthroughBehavior: WHEN_NO_MATCH
+        TimeoutInMillis: 29000
+        Type: AWS_PROXY
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${OnlineAuctionBidding.Arn}/invocations'
+        IntegrationResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            "method.response.header.Access-Control-Allow-Headers" : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+            "method.response.header.Access-Control-Allow-Methods": "'PUT'"
+            "method.response.header.Access-Control-Allow-Origin" : "'*'"
+          ResponseTemplates:
+            application/json: ''
+        
+      MethodResponses:
+      - StatusCode: 200
+        ResponseModels:
+          application/json: 'Empty'
+        ResponseParameters:
+          "method.response.header.Access-Control-Allow-Headers" : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+          "method.response.header.Access-Control-Allow-Methods": "'PUT'"
+          "method.response.header.Access-Control-Allow-Origin" : "'*'"
+      OperationName: 'lambda'
+      ResourceId: !Ref BidApi
+      RestApiId: !Ref ApiGatewayRestApi
+
+  # Email resource
+  EmailAPI:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !GetAtt ApiGatewayRestApi.RootResourceId
+      PathPart: 'email'
+      RestApiId: !Ref ApiGatewayRestApi
+  
+  # Email option method
+  EmailOption:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: OPTIONS
+      Integration:
+        IntegrationResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+            "method.response.header.Access-Control-Allow-Methods": "'OPTIONS'"
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          ResponseTemplates:
+            application/json: ''
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+        Type: MOCK
+      MethodResponses:
+      - StatusCode: 200
+        ResponseModels:
+          application/json: 'Empty'
+        ResponseParameters:
+            "method.response.header.Access-Control-Allow-Headers": false
+            "method.response.header.Access-Control-Allow-Methods": false
+            "method.response.header.Access-Control-Allow-Origin": false
+      OperationName: 'lambda'
+      ResourceId: !Ref EmailAPI
+      RestApiId: !Ref ApiGatewayRestApi  
+
+  # Email - create subscription resource
+  CreateSubscriptionAPI:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !Ref EmailAPI
+      PathPart: 'create-subscription'
+      RestApiId: !Ref ApiGatewayRestApi
+
+  # Create subscription option method
+  CreateSubscriptionOption:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: OPTIONS
+      Integration:
+        IntegrationResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+            "method.response.header.Access-Control-Allow-Methods": "'OPTIONS'"
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          ResponseTemplates:
+            application/json: ''
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+        Type: MOCK
+      MethodResponses:
+      - StatusCode: 200
+        ResponseModels:
+          application/json: 'Empty'
+        ResponseParameters:
+            "method.response.header.Access-Control-Allow-Headers": false
+            "method.response.header.Access-Control-Allow-Methods": false
+            "method.response.header.Access-Control-Allow-Origin": false
+      OperationName: 'lambda'
+      ResourceId: !Ref CreateSubscriptionAPI
+      RestApiId: !Ref ApiGatewayRestApi  
+
+  # Create subscription post method
+  CreateSubscriptionPost:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: POST
+      Integration:
+        ConnectionType: INTERNET
+        # iam role arn
+        Credentials: arn:aws:iam::472317706936:role/LabRole 
+        IntegrationHttpMethod: POST
+        PassthroughBehavior: WHEN_NO_MATCH
+        TimeoutInMillis: 29000
+        Type: AWS_PROXY
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CreateSubscriptionLambda.Arn}/invocations'
+        IntegrationResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            "method.response.header.Access-Control-Allow-Headers" : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+            "method.response.header.Access-Control-Allow-Methods": "'GET'"
+            "method.response.header.Access-Control-Allow-Origin" : "'*'"
+          ResponseTemplates:
+            application/json: ''
+        
+      MethodResponses:
+      - StatusCode: 200
+        ResponseModels:
+          application/json: 'Empty'
+        ResponseParameters:
+          "method.response.header.Access-Control-Allow-Headers" : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+          "method.response.header.Access-Control-Allow-Methods": "'GET'"
+          "method.response.header.Access-Control-Allow-Origin" : "'*'"
+      OperationName: 'lambda'
+      ResourceId: !Ref CreateSubscriptionAPI
+      RestApiId: !Ref ApiGatewayRestApi
+
+  # Email - send email resource
+  SendEmailAPI:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !Ref EmailAPI
+      PathPart: 'send-email'
+      RestApiId: !Ref ApiGatewayRestApi
+
+  # Send Email option method
+  SendEmailOption:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: OPTIONS
+      Integration:
+        IntegrationResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+            "method.response.header.Access-Control-Allow-Methods": "'OPTIONS'"
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          ResponseTemplates:
+            application/json: ''
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+        Type: MOCK
+      MethodResponses:
+      - StatusCode: 200
+        ResponseModels:
+          application/json: 'Empty'
+        ResponseParameters:
+            "method.response.header.Access-Control-Allow-Headers": false
+            "method.response.header.Access-Control-Allow-Methods": false
+            "method.response.header.Access-Control-Allow-Origin": false
+      OperationName: 'lambda'
+      ResourceId: !Ref SendEmailAPI
+      RestApiId: !Ref ApiGatewayRestApi  
+
+  # Send Email post method
+  SendEmailPost:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: POST
+      Integration:
+        ConnectionType: INTERNET
+        # iam role arn
+        Credentials: arn:aws:iam::472317706936:role/LabRole 
+        IntegrationHttpMethod: POST
+        PassthroughBehavior: WHEN_NO_MATCH
+        TimeoutInMillis: 29000
+        Type: AWS_PROXY
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SendEmailLambda.Arn}/invocations'
+        IntegrationResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            "method.response.header.Access-Control-Allow-Headers" : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+            "method.response.header.Access-Control-Allow-Methods": "'GET'"
+            "method.response.header.Access-Control-Allow-Origin" : "'*'"
+          ResponseTemplates:
+            application/json: ''
+        
+      MethodResponses:
+      - StatusCode: 200
+        ResponseModels:
+          application/json: 'Empty'
+        ResponseParameters:
+          "method.response.header.Access-Control-Allow-Headers" : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+          "method.response.header.Access-Control-Allow-Methods": "'GET'"
+          "method.response.header.Access-Control-Allow-Origin" : "'*'"
+      OperationName: 'lambda'
+      ResourceId: !Ref SendEmailAPI
+      RestApiId: !Ref ApiGatewayRestApi
+
+  # Product resource
+  ProductAPI:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !GetAtt ApiGatewayRestApi.RootResourceId
+      PathPart: 'product'
+      RestApiId: !Ref ApiGatewayRestApi
+
+  # Products option method
+  ProductOption:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: OPTIONS
+      Integration:
+        IntegrationResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+            "method.response.header.Access-Control-Allow-Methods": "'OPTIONS'"
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          ResponseTemplates:
+            application/json: ''
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+        Type: MOCK
+      MethodResponses:
+      - StatusCode: 200
+        ResponseModels:
+          application/json: 'Empty'
+        ResponseParameters:
+            "method.response.header.Access-Control-Allow-Headers": false
+            "method.response.header.Access-Control-Allow-Methods": false
+            "method.response.header.Access-Control-Allow-Origin": false
+      OperationName: 'lambda'
+      ResourceId: !Ref ProductAPI
+      RestApiId: !Ref ApiGatewayRestApi  
+
+  # Products get method
+  ProductGet:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: GET
+      Integration:
+        ConnectionType: INTERNET
+        # iam role arn
+        Credentials: arn:aws:iam::472317706936:role/LabRole 
+        IntegrationHttpMethod: GET
+        PassthroughBehavior: WHEN_NO_MATCH
+        TimeoutInMillis: 29000
+        Type: AWS_PROXY
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${OnineAuctionSellerLambda.Arn}/invocations'
+        IntegrationResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            "method.response.header.Access-Control-Allow-Headers" : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+            "method.response.header.Access-Control-Allow-Methods": "'GET'"
+            "method.response.header.Access-Control-Allow-Origin" : "'*'"
+          ResponseTemplates:
+            application/json: ''
+        
+      MethodResponses:
+      - StatusCode: 200
+        ResponseModels:
+          application/json: 'Empty'
+        ResponseParameters:
+          "method.response.header.Access-Control-Allow-Headers" : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+          "method.response.header.Access-Control-Allow-Methods": "'GET'"
+          "method.response.header.Access-Control-Allow-Origin" : "'*'"
+      OperationName: 'lambda'
+      ResourceId: !Ref ProductAPI
+      RestApiId: !Ref ApiGatewayRestApi
+
+  # Products post method
+  ProductPost:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: POST
+      Integration:
+        ConnectionType: INTERNET
+        # iam role arn
+        Credentials: arn:aws:iam::472317706936:role/LabRole 
+        IntegrationHttpMethod: POST
+        PassthroughBehavior: WHEN_NO_MATCH
+        TimeoutInMillis: 29000
+        Type: AWS_PROXY
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${OnineAuctionSellerLambda.Arn}/invocations'
+        IntegrationResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            "method.response.header.Access-Control-Allow-Headers" : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+            "method.response.header.Access-Control-Allow-Methods": "'POST'"
+            "method.response.header.Access-Control-Allow-Origin" : "'*'"
+          ResponseTemplates:
+            application/json: ''
+        
+      MethodResponses:
+      - StatusCode: 200
+        ResponseModels:
+          application/json: 'Empty'
+        ResponseParameters:
+          "method.response.header.Access-Control-Allow-Headers" : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+          "method.response.header.Access-Control-Allow-Methods": "'POST'"
+          "method.response.header.Access-Control-Allow-Origin" : "'*'"
+      OperationName: 'lambda'
+      ResourceId: !Ref ProductAPI
+      RestApiId: !Ref ApiGatewayRestApi
+
+  # Products patch method
+  ProductPatch:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: PATCH
+      Integration:
+        ConnectionType: INTERNET
+        # iam role arn
+        Credentials: arn:aws:iam::472317706936:role/LabRole 
+        IntegrationHttpMethod: PATCH
+        PassthroughBehavior: WHEN_NO_MATCH
+        TimeoutInMillis: 29000
+        Type: AWS_PROXY
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${OnineAuctionSellerLambda.Arn}/invocations'
+        IntegrationResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            "method.response.header.Access-Control-Allow-Headers" : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+            "method.response.header.Access-Control-Allow-Methods": "'PATCH'"
+            "method.response.header.Access-Control-Allow-Origin" : "'*'"
+          ResponseTemplates:
+            application/json: ''
+        
+      MethodResponses:
+      - StatusCode: 200
+        ResponseModels:
+          application/json: 'Empty'
+        ResponseParameters:
+          "method.response.header.Access-Control-Allow-Headers" : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+          "method.response.header.Access-Control-Allow-Methods": "'PATCH'"
+          "method.response.header.Access-Control-Allow-Origin" : "'*'"
+      OperationName: 'lambda'
+      ResourceId: !Ref ProductAPI
+      RestApiId: !Ref ApiGatewayRestApi
+  
+  # Product by bidder resource
+  ProductByBidderAPI:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !GetAtt ApiGatewayRestApi.RootResourceId
+      PathPart: 'productbybidder'
+      RestApiId: !Ref ApiGatewayRestApi
+
+  # Product by bidder option method
+  ProductByBidderOption:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: OPTIONS
+      Integration:
+        IntegrationResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+            "method.response.header.Access-Control-Allow-Methods": "'OPTIONS'"
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          ResponseTemplates:
+            application/json: ''
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+        Type: MOCK
+      MethodResponses:
+      - StatusCode: 200
+        ResponseModels:
+          application/json: 'Empty'
+        ResponseParameters:
+            "method.response.header.Access-Control-Allow-Headers": false
+            "method.response.header.Access-Control-Allow-Methods": false
+            "method.response.header.Access-Control-Allow-Origin": false
+      OperationName: 'lambda'
+      ResourceId: !Ref ProductByBidderAPI
+      RestApiId: !Ref ApiGatewayRestApi  
+
+  # Product by bidder  get method
+  ProductByBidderGet:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: GET
+      Integration:
+        ConnectionType: INTERNET
+        # iam role arn
+        Credentials: arn:aws:iam::472317706936:role/LabRole 
+        IntegrationHttpMethod: GET
+        PassthroughBehavior: WHEN_NO_MATCH
+        TimeoutInMillis: 29000
+        Type: AWS_PROXY
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${OnineAuctionSellerBidderLambda.Arn}/invocations'
+        IntegrationResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            "method.response.header.Access-Control-Allow-Headers" : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+            "method.response.header.Access-Control-Allow-Methods": "'GET'"
+            "method.response.header.Access-Control-Allow-Origin" : "'*'"
+          ResponseTemplates:
+            application/json: ''
+        
+      MethodResponses:
+      - StatusCode: 200
+        ResponseModels:
+          application/json: 'Empty'
+        ResponseParameters:
+          "method.response.header.Access-Control-Allow-Headers" : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+          "method.response.header.Access-Control-Allow-Methods": "'GET'"
+          "method.response.header.Access-Control-Allow-Origin" : "'*'"
+      OperationName: 'lambda'
+      ResourceId: !Ref ProductByBidderAPI
+      RestApiId: !Ref ApiGatewayRestApi
+
+  # Product by seller resource
+  ProductBySellerAPI:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !GetAtt ApiGatewayRestApi.RootResourceId
+      PathPart: 'productbyseller'
+      RestApiId: !Ref ApiGatewayRestApi
+
+  # Product by seller option method
+  ProductBySellerOption:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: OPTIONS
+      Integration:
+        IntegrationResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+            "method.response.header.Access-Control-Allow-Methods": "'OPTIONS'"
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          ResponseTemplates:
+            application/json: ''
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+        Type: MOCK
+      MethodResponses:
+      - StatusCode: 200
+        ResponseModels:
+          application/json: 'Empty'
+        ResponseParameters:
+            "method.response.header.Access-Control-Allow-Headers": false
+            "method.response.header.Access-Control-Allow-Methods": false
+            "method.response.header.Access-Control-Allow-Origin": false
+      OperationName: 'lambda'
+      ResourceId: !Ref ProductBySellerAPI
+      RestApiId: !Ref ApiGatewayRestApi  
+
+  # Product by seller get method
+  ProductBySellerGet:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: GET
+      Integration:
+        ConnectionType: INTERNET
+        # iam role arn
+        Credentials: arn:aws:iam::472317706936:role/LabRole 
+        IntegrationHttpMethod: GET
+        PassthroughBehavior: WHEN_NO_MATCH
+        TimeoutInMillis: 29000
+        Type: AWS_PROXY
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${OnineAuctionSellerBidderLambda.Arn}/invocations'
+        IntegrationResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            "method.response.header.Access-Control-Allow-Headers" : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+            "method.response.header.Access-Control-Allow-Methods": "'GET'"
+            "method.response.header.Access-Control-Allow-Origin" : "'*'"
+          ResponseTemplates:
+            application/json: ''
+        
+      MethodResponses:
+      - StatusCode: 200
+        ResponseModels:
+          application/json: 'Empty'
+        ResponseParameters:
+          "method.response.header.Access-Control-Allow-Headers" : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+          "method.response.header.Access-Control-Allow-Methods": "'GET'"
+          "method.response.header.Access-Control-Allow-Origin" : "'*'"
+      OperationName: 'lambda'
+      ResourceId: !Ref ProductBySellerAPI
+      RestApiId: !Ref ApiGatewayRestApi
+
+  # Update user resource
+  UpdateUserAPI:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !GetAtt ApiGatewayRestApi.RootResourceId
+      PathPart: 'updateuser'
+      RestApiId: !Ref ApiGatewayRestApi
+
+  # Update user option method
+  UpdateUserOption:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: OPTIONS
+      Integration:
+        IntegrationResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+            "method.response.header.Access-Control-Allow-Methods": "'OPTIONS'"
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          ResponseTemplates:
+            application/json: ''
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+        Type: MOCK
+      MethodResponses:
+      - StatusCode: 200
+        ResponseModels:
+          application/json: 'Empty'
+        ResponseParameters:
+            "method.response.header.Access-Control-Allow-Headers": false
+            "method.response.header.Access-Control-Allow-Methods": false
+            "method.response.header.Access-Control-Allow-Origin": false
+      OperationName: 'lambda'
+      ResourceId: !Ref UpdateUserAPI
+      RestApiId: !Ref ApiGatewayRestApi  
+
+   # Products post method
+  
+  # Update user post method
+  UpdateUserPost:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: POST
+      Integration:
+        ConnectionType: INTERNET
+        # iam role arn
+        Credentials: arn:aws:iam::472317706936:role/LabRole 
+        IntegrationHttpMethod: POST
+        PassthroughBehavior: WHEN_NO_MATCH
+        TimeoutInMillis: 29000
+        Type: AWS_PROXY
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${OnineAuctionUserLambda.Arn}/invocations'
+        IntegrationResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            "method.response.header.Access-Control-Allow-Headers" : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+            "method.response.header.Access-Control-Allow-Methods": "'POST'"
+            "method.response.header.Access-Control-Allow-Origin" : "'*'"
+          ResponseTemplates:
+            application/json: ''
+        
+      MethodResponses:
+      - StatusCode: 200
+        ResponseModels:
+          application/json: 'Empty'
+        ResponseParameters:
+          "method.response.header.Access-Control-Allow-Headers" : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+          "method.response.header.Access-Control-Allow-Methods": "'POST'"
+          "method.response.header.Access-Control-Allow-Origin" : "'*'"
+      OperationName: 'lambda'
+      ResourceId: !Ref UpdateUserAPI
+      RestApiId: !Ref ApiGatewayRestApi
+
+  # User resource
+  UserAPI:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !GetAtt ApiGatewayRestApi.RootResourceId
+      PathPart: 'user'
+      RestApiId: !Ref ApiGatewayRestApi
+
+  # User option method
+  UserOption:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: OPTIONS
+      Integration:
+        IntegrationResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+            "method.response.header.Access-Control-Allow-Methods": "'OPTIONS'"
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          ResponseTemplates:
+            application/json: ''
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+        Type: MOCK
+      MethodResponses:
+      - StatusCode: 200
+        ResponseModels:
+          application/json: 'Empty'
+        ResponseParameters:
+            "method.response.header.Access-Control-Allow-Headers": false
+            "method.response.header.Access-Control-Allow-Methods": false
+            "method.response.header.Access-Control-Allow-Origin": false
+      OperationName: 'lambda'
+      ResourceId: !Ref UserAPI
+      RestApiId: !Ref ApiGatewayRestApi  
+
+  # User get method
+  UserGet:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: GET
+      Integration:
+        ConnectionType: INTERNET
+        # iam role arn
+        Credentials: arn:aws:iam::472317706936:role/LabRole 
+        IntegrationHttpMethod: GET
+        PassthroughBehavior: WHEN_NO_MATCH
+        TimeoutInMillis: 29000
+        Type: AWS_PROXY
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${OnineAuctionUserLambda.Arn}/invocations'
+        IntegrationResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            "method.response.header.Access-Control-Allow-Headers" : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+            "method.response.header.Access-Control-Allow-Methods": "'GET'"
+            "method.response.header.Access-Control-Allow-Origin" : "'*'"
+          ResponseTemplates:
+            application/json: ''
+        
+      MethodResponses:
+      - StatusCode: 200
+        ResponseModels:
+          application/json: 'Empty'
+        ResponseParameters:
+          "method.response.header.Access-Control-Allow-Headers" : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+          "method.response.header.Access-Control-Allow-Methods": "'GET'"
+          "method.response.header.Access-Control-Allow-Origin" : "'*'"
+      OperationName: 'lambda'
+      ResourceId: !Ref UserAPI
+      RestApiId: !Ref ApiGatewayRestApi
+
+  # User post method
+  UserPost:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: POST
+      Integration:
+        ConnectionType: INTERNET
+        # iam role arn
+        Credentials: arn:aws:iam::472317706936:role/LabRole 
+        IntegrationHttpMethod: POST
+        PassthroughBehavior: WHEN_NO_MATCH
+        TimeoutInMillis: 29000
+        Type: AWS_PROXY
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${OnineAuctionUserLambda.Arn}/invocations'
+        IntegrationResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            "method.response.header.Access-Control-Allow-Headers" : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+            "method.response.header.Access-Control-Allow-Methods": "'POST'"
+            "method.response.header.Access-Control-Allow-Origin" : "'*'"
+          ResponseTemplates:
+            application/json: ''
+        
+      MethodResponses:
+      - StatusCode: 200
+        ResponseModels:
+          application/json: 'Empty'
+        ResponseParameters:
+          "method.response.header.Access-Control-Allow-Headers" : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+          "method.response.header.Access-Control-Allow-Methods": "'POST'"
+          "method.response.header.Access-Control-Allow-Origin" : "'*'"
+      OperationName: 'lambda'
+      ResourceId: !Ref UserAPI
+      RestApiId: !Ref ApiGatewayRestApi
+
+  # User put method
+  UserPut:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: PUT
+      Integration:
+        ConnectionType: INTERNET
+        # iam role arn
+        Credentials: arn:aws:iam::472317706936:role/LabRole 
+        IntegrationHttpMethod: PUT
+        PassthroughBehavior: WHEN_NO_MATCH
+        TimeoutInMillis: 29000
+        Type: AWS_PROXY
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${OnineAuctionUserLambda.Arn}/invocations'
+        IntegrationResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            "method.response.header.Access-Control-Allow-Headers" : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+            "method.response.header.Access-Control-Allow-Methods": "'PUT'"
+            "method.response.header.Access-Control-Allow-Origin" : "'*'"
+          ResponseTemplates:
+            application/json: ''
+        
+      MethodResponses:
+      - StatusCode: 200
+        ResponseModels:
+          application/json: 'Empty'
+        ResponseParameters:
+          "method.response.header.Access-Control-Allow-Headers" : "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+          "method.response.header.Access-Control-Allow-Methods": "'PUT'"
+          "method.response.header.Access-Control-Allow-Origin" : "'*'"
+      OperationName: 'lambda'
+      ResourceId: !Ref UserAPI
+      RestApiId: !Ref ApiGatewayRestApi
+    
+
+  # Common gateway model for all apis 
+  ApiGatewayModel:
+    Type: AWS::ApiGateway::Model
+    Properties:
+      ContentType: 'application/json'
+      RestApiId: !Ref ApiGatewayRestApi
+      Schema: {}
+  
+  # Stage for all api gateway which contains all the apis
+  ApiGatewayStage:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      DeploymentId: !Ref ApiGatewayDeployment
+      Description: Lambda API Stage Prod
+      RestApiId: !Ref ApiGatewayRestApi
+      StageName: 'prod'
+
+  # API gateway Deployment which depends on all the methods present in the resources
+  ApiGatewayDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn: [AuctionProductsGet, AuctionProductsOption, AuctionProductsGet, BidOption, BidGet, BidPut, EmailOption, CreateSubscriptionOption, CreateSubscriptionPost, 
+    SendEmailOption, SendEmailPost, ProductOption, ProductGet, ProductPost, ProductPatch, ProductByBidderOption, ProductByBidderGet, ProductBySellerOption, ProductBySellerGet, 
+    UpdateUserOption, UpdateUserPost, UserOption, UserGet, UserPost, UserPut]
+    Properties:
+      Description: Lambda API Deployment
+      RestApiId: !Ref ApiGatewayRestApi
+                
+
+  # Lambda functions
+  
+  # online auction seller lambda
+  OnineAuctionSellerLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket: lambda-online-auction-cf
+        S3Key: onine-auction-seller/index.zip
+      Description: AWS Lambda auction seller function
+      FunctionName: 'cf-onine-auction-seller'
+      Handler: index.handler
+      MemorySize: 256
+      Role: arn:aws:iam::472317706936:role/LabRole
+      Runtime: nodejs16.x
+      Timeout: 60
+
+  # online auction bidding lambda
+  OnlineAuctionBidding:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket: lambda-online-auction-cf
+        S3Key: OnlineAuction-Bidding/index.zip
+      Description: AWS Lambda auction bidding function
+      FunctionName: 'cf-OnlineAuction-Bidding'
+      Handler: index.handler
+      MemorySize: 256
+      Role: arn:aws:iam::472317706936:role/LabRole
+      Runtime: nodejs16.x
+      Timeout: 60
+
+  # send email lambda (py)
+  SendEmailLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket: lambda-online-auction-cf
+        S3Key: send-email/lambda_function.zip
+      Description: AWS Lambda send email function
+      FunctionName: 'cf-send-email'
+      Handler: index.handler
+      MemorySize: 256
+      Role: arn:aws:iam::472317706936:role/LabRole
+      Runtime: python3.9
+      Timeout: 60
+
+  # create subscription lambda (py)
+  CreateSubscriptionLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket: lambda-online-auction-cf
+        S3Key: create-subscription/lambda_function.zip
+      Description: AWS Lambda create subscription function
+      FunctionName: 'cf-create-subscription'
+      Handler: index.handler
+      MemorySize: 256
+      Role: arn:aws:iam::472317706936:role/LabRole
+      Runtime: python3.9
+      Timeout: 60
+  
+  
+  # online auction seller bidder lambda
+  OnineAuctionSellerBidderLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket: lambda-online-auction-cf
+        S3Key: onlineAuction_seller_bidder/index.zip
+      Description: AWS Lambda auction seller bidder function
+      FunctionName: 'cf-onlineAuction_seller_bidder'
+      Handler: index.handler
+      MemorySize: 256
+      Role: arn:aws:iam::472317706936:role/LabRole
+      Runtime: nodejs16.x
+      Timeout: 60
+
+  # online auction create user lambda
+  OnineAuctionUserLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket: lambda-online-auction-cf
+        S3Key: OnlineAuction_createUser/index.zip
+      Description: Auction users lambda
+      FunctionName: 'cf-OnlineAuction_createUser'
+      Handler: index.handler
+      MemorySize: 256
+      Role: arn:aws:iam::472317706936:role/LabRole
+      Runtime: nodejs16.x
+      Timeout: 60

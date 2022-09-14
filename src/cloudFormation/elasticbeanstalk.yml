@@ -5,7 +5,7 @@ Resources:
     Type: AWS::ElasticBeanstalk::Application
     Properties:
       Description: AWS Elastic Beanstalk Sample Application
-      ApplicationName: online-auction-frontend
+      ApplicationName: online-auction-UI
 
   # eb app version
   FrontendAppVersion:
@@ -15,7 +15,7 @@ Resources:
         Ref: FrontendApp
       Description: Online Auction Application Version
       SourceBundle:
-        S3Bucket: grp-39
+        S3Bucket: online-auction-ui
         S3Key: build.zip
 
   # eb configuration template
